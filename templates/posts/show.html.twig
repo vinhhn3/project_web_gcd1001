@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Show a single post{% endblock %}
+
+{% block body %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Post Id: {{ post.id }}</h5>
+            <p class="card-text">
+                {{ post.content}}
+                {{ post.createdAt|date('Y-m-d H:i:s') }}
+            </p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+{% endblock %}

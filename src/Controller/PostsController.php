@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PostsController extends AbstractController
 {
     /**
-     * @Route("/posts", name="app_posts")
+     * @Route("/posts", name="show_all_posts")
      */
     public function index(): Response
     {
@@ -25,6 +25,25 @@ class PostsController extends AbstractController
             'controller_name' => 'PostsController',
             'posts' => $posts
             
+        ]);
+    }
+    
+    /**
+     * @param $id
+     * @return Response
+     * @Route("/posts/{id}", name="show_post", methods={"GET"})
+     */
+    public function show($id) : Response
+    {
+        // Use ORM (Doctrine) to query a single post in Database
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository(Post::class);
+        
+        // Find a single post in Database
+        $post = $repo->find($id);
+        
+        return $this->render('posts/show.html.twig',[
+            'post' => $post
         ]);
     }
 }
