@@ -46,4 +46,25 @@ class PostsController extends AbstractController
             'post' => $post
         ]);
     }
+    
+    /**
+     * @param $id
+     * @return Response
+     * @Route("/posts/{id}/delete", name="delete_post", methods={"GET"})
+     */
+    public function delete($id): Response
+    {
+        // Use ORM (Doctrine) to query a single post in Database
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository(Post::class);
+        
+        // Delete a single post
+        $post = $repo->find($id);
+        $repo->remove($post);
+        $em->flush();
+        
+        // Render page all_posts
+        return $this->redirectToRoute("show_all_posts");
+        
+    }
 }

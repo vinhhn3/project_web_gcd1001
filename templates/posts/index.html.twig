@@ -16,7 +16,7 @@
                 <th>{{ post.id }}</th>
                 <th>{{ post.content }}</th>
                 <th>
-                    <a href="#" class="btn btn-danger">Delete</a>
+                    <a href="{{ path('delete_post', {id:post.id}) }}" class="btn btn-danger">Delete</a>
                     <a href="{{ path('show_post', {id:post.id}) }}" class="btn btn-success">Details</a>
                 </th>
             </tr>
