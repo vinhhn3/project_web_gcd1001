@@ -20,12 +20,12 @@ class Post
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $content;
+    public $content;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    public $createdAt;
 
     public function getId(): ?int
     {

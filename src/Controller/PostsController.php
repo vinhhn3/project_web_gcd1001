@@ -3,14 +3,70 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PostsController extends AbstractController
 {
     /**
-     * @Route("/posts", name="show_all_posts")
+     * @Route("/posts/create", name="create_post", methods={"GET", "POST"})
+     */
+    public function create(Request $request) : Response{
+        $post = new Post();
+        $postForm = $this->createForm(PostType::class, $post);
+        $postForm->handleRequest($request);
+        
+        if ($postForm->isSubmitted() && $postForm->isValid()){
+            $data = $postForm->getData();
+            $post->setContent($data->content);
+            $post->setCreatedAt($data->createdAt);
+            
+            // Use ORM (Doctrine) to query a single post in Database
+            $em = $this->getDoctrine()->getManager();
+            $repo = $em->getRepository(Post::class);
+            
+            $repo->add($post);
+            $em->flush();
+            return $this->redirectToRoute('show_all_posts');
+        }
+        
+        return $this->render('posts/create.html.twig',[
+            'post_form' => $postForm->createView()
+        ]);
+    }
+    
+    /**
+     * @Route("/posts/update/{id}", name="update_post", methods={"GET", "POST"})
+     */
+    public function update($id, Request $request){
+        // Use ORM (Doctrine) to query a single post in Database
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository(Post::class);
+        $post = $repo->find($id);
+        
+        $postForm = $this->createForm(PostType::class, $post);
+        $postForm->handleRequest($request);
+        
+        if ($postForm->isSubmitted() && $postForm->isValid()){
+            $data = $postForm->getData();
+            $post->setContent($data->content);
+            $post->setCreatedAt($data->createdAt);
+            $repo->add($post);
+            $em->flush();
+            return $this->redirectToRoute('show_all_posts');
+        }
+        
+        return $this->render('posts/update.html.twig',[
+            'post_form' => $postForm->createView()
+        ]);
+    }
+    
+
+    /**
+     * @Route("/posts", name="show_all_posts", methods={"GET"})
      */
     public function index(): Response
     {
@@ -28,10 +84,12 @@ class PostsController extends AbstractController
         ]);
     }
     
+
+    
     /**
      * @param $id
      * @return Response
-     * @Route("/posts/{id}", name="show_post", methods={"GET"})
+     * @Route("/posts/get/{id}", name="show_post", methods={"GET"})
      */
     public function show($id) : Response
     {
@@ -50,7 +108,7 @@ class PostsController extends AbstractController
     /**
      * @param $id
      * @return Response
-     * @Route("/posts/{id}/delete", name="delete_post", methods={"GET"})
+     * @Route("/posts/delete/{id}", name="delete_post", methods={"GET"})
      */
     public function delete($id): Response
     {
@@ -67,4 +125,6 @@ class PostsController extends AbstractController
         return $this->redirectToRoute("show_all_posts");
         
     }
+    
+
 }
